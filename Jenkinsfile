@@ -39,7 +39,15 @@ pipeline {
      stage('Check for Running Instance') {
         steps {
             script{
-               httpRequest acceptType: 'APPLICATION_JSON', consoleLogResponseBody: true, contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: '{"region": "EU"}', url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowAppInst'      
+
+                TRegion = "EU"
+                def rBody = """
+                {"region": "$TRegion"}
+                """
+                def response = httpRequest contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/login'
+               httpRequest acceptType: 'APPLICATION_JSON', consoleLogResponseBody: true, contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowAppInst'      
+                println("Status: "+response.status)
+                println("Content: "+response.content)
                 }
         }
     }
