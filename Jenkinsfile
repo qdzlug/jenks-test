@@ -40,7 +40,8 @@ pipeline {
         steps {
             script{
 
-                TRegion = "EU"
+                def TRegion = "EU"
+
                 def rBody = """
                 {"region": "$TRegion"}
                 """
