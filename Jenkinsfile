@@ -4,7 +4,14 @@ pipeline {
    agent any
 
    stages {
-      stage('Login and get JWT') {
+
+    stage('Clone repository') {
+        /* Let's make sure we have the repository cloned to our workspace */
+
+        checkout scm
+    }
+
+    stage('Login and get JWT') {
          steps {
             script{
 
