@@ -45,7 +45,7 @@ pipeline {
               {"region": "EU"}
               """
 
-              def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rbody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowAppInst'
+              def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowAppInst'
 
                 println("Status: "+response.status)
                 println("Content: "+response.content)
