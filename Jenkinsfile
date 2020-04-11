@@ -41,10 +41,8 @@ pipeline {
         steps {
             script{
 
-              REGION=EU
-              
               def rBody = """
-              {"region": "$REGION"}
+              {"region": "EU"}
               """
 
               def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rbody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowAppInst'
