@@ -1,5 +1,4 @@
 def AUTH_HEADER
-def REGION
 def ACCPORTS
 def ACCTYPE
 def ALLIP
