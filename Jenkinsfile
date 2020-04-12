@@ -50,7 +50,7 @@ pipeline {
               FLAVOR = "m4.small"
               IMGPATH = "docker.mobiledgex.net/demoorg/images/test:1.1"
               IMGTYPE = 1
-              INTPORTS = True
+              INTPORTS = "True"
               IPACC = 1
               MEXPASS = "helloworld"
               MEXUSER = "demo"
