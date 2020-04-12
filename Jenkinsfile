@@ -1,5 +1,23 @@
 def AUTH_HEADER
 def REGION
+def ACCPORTS
+def ACCTYPE
+def ALLIP
+def APPNAME
+def APPVER
+def CLDLET
+def CLSTR
+def FLAVOR
+def IMGPATH
+def IMGTYPE
+def INTPORTS
+def IPACC
+def OPKEY
+def ORG
+def REGION
+def REV
+def TYPE
+
 
 pipeline {
    agent any
@@ -42,7 +60,7 @@ pipeline {
             script{
 
               REGION="EU"
-              
+
               def rBody = """
               {"region": "$REGION"}
               """
