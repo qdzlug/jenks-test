@@ -33,33 +33,35 @@ pipeline {
 
     stage('Set Variables') {
         steps {
-        /*
-         * In the real world, we'd want to read these
-         * from a config file and not have them hardcoded
-         * in the Jenkins file.
-         */
+           /*
+            * In the real world, we'd want to read these
+            * from a config file and not have them hardcoded
+            * in the Jenkins file.
+            */
 
-         ACCPORTS = "TCP:8000"
-         ACCTYPE = 0
-         ALLIP = "dynamic"
-         APPNAME = "testapp"
-         APPVER = "1.1"
-         CLDLET = "munich-main"
-         CLSTR = "testcluster"
-         FLAVOR = "m4.small"
-         IMGPATH = "docker.mobiledgex.net/demoorg/images/test:1.1"
-         IMGTYPE = 1
-         INTPORTS = True
-         IPACC = 1
-         MEXPASS = "helloworld"
-         MEXUSER = "demo"
-         OPKEY = "TDG"
-         ORG = "demoorg"
-         REGION = "EU"
-         REV = 0
-         TYPE = "docker"
-        }
-    }
+            script {
+              ACCPORTS = "TCP:8000"
+              ACCTYPE = 0
+              ALLIP = "dynamic"
+              APPNAME = "testapp"
+              APPVER = "1.1"
+              CLDLET = "munich-main"
+              CLSTR = "testcluster"
+              FLAVOR = "m4.small"
+              IMGPATH = "docker.mobiledgex.net/demoorg/images/test:1.1"
+              IMGTYPE = 1
+              INTPORTS = True
+              IPACC = 1
+              MEXPASS = "helloworld"
+              MEXUSER = "demo"
+              OPKEY = "TDG"
+              ORG = "demoorg"
+              REGION = "EU"
+              REV = 0
+              TYPE = "docker"
+            }
+         }
+       }
 
 
     stage('Login and get JWT') {
