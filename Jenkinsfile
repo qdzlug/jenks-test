@@ -91,10 +91,25 @@ pipeline {
         steps {
             script{
 
-              REGION="EU"
 
               def rBody = """
-              {"region": "$REGION"}
+              {
+              "region": "$REGION",
+              "clusterinst": {
+              "key": {
+                "cluster_key": {
+                  "name": "$CLSTR"
+                },
+                "cloudlet_key": {
+                  "operator_key": {
+                    "name": "$OPKEY"
+                  },
+                  "name": "$CLDLET"
+                },
+                "developer": "$ORG"
+                 }
+                }
+              }
               """
 
               def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowClusterInst'
