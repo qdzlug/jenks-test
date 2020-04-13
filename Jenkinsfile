@@ -251,7 +251,7 @@ pipeline {
                    },
                    "cloudlet_key": {
                      "operator_key": {
-                       "name": "OPKEY"
+                       "name": "$OPKEY"
                      },
                      "name": "$CLDLET"
                    },
