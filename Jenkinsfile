@@ -16,10 +16,6 @@ def ORG
 def REGION
 def REV
 def TYPE
-
-/*
- * Variables for state.
- * /
 def CLUSTERSTATE
 def APPSTATE
 def APPINSTSTATE
