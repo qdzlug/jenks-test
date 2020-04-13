@@ -140,7 +140,6 @@ pipeline {
                "access_type": $ACCTYPE,
                "image_path": "$IMGPATH",
                "image_type": $IMGTYPE,
-               "internal_ports": $INTPORTS,
                "default_flavor": {
                  "name": "$FLAVOR"
                },
