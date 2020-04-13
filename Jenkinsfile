@@ -67,6 +67,24 @@ pipeline {
         }
     }
 
+    stage('Build Docker Image') {
+        /*
+         * Build our image - if we fail here there
+         * is no real point to continuing on.
+         */
+        app = docker.build("qdzlug/mex-docker")
+    }
+
+    state('Test Docker Image') {
+       /*
+        * Test our application; this is obviously
+        * not a very comprehensive test.
+        */
+        app.inside {
+           curl -f http://127.0.0.1:8000 || exit 1
+        }
+    }
+
 
     stage('Login and get JWT') {
          steps {
