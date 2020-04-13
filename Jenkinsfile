@@ -198,6 +198,109 @@ pipeline {
       }
   }
 
+  stage('Delete Existing Application Instance') {
+     steps {
+         script{
+           def rBody = """
+           {
+             "Region": "$REGION",
+             "AppInst": {
+               "key": {
+                 "app_key": {
+                   "organization": "$ORG",
+                   "name": "$APPNAME",
+                   "version": "$APPVER",
+                   "developer_key": {
+                     "name": "$ORG"
+                   }
+                 },
+                 "cluster_inst_key": {
+                   "cluster_key": {
+                     "name": "$CLSTR"
+                   },
+                   "cloudlet_key": {
+                     "operator_key": {
+                       "name": "OPKEY"
+                     },
+                     "name": "$CLDLET"
+                   },
+                   "developer": "$ORG"
+                 }
+               }
+             }
+           }
+           """
+
+           def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteAppInst'
+
+             println("Status: "+response.status)
+             println("Content: "+response.content)
+             }
+     }
+ }
+
+ stage('Delete Existing Application') {
+    steps {
+        script{
+          def rBody = """
+          {
+            "Region": "$REGION",
+            "App": {
+              "key": {
+                "developer_key": {
+                  "name": "$ORG"
+                },
+                "name": "$APPNAME",
+                "organization": "$ORG",
+                "version": "$APPVER"
+              }
+            }
+          }
+          """
+
+          def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteApp'
+
+            println("Status: "+response.status)
+            println("Content: "+response.content)
+            }
+    }
+}
+
+stage('Delete Existing Cluster') {
+   steps {
+       script{
+         def rBody = """
+         {
+           "Region": "$REGION",
+           "ClusterInst": {
+             "key": {
+               "cloudlet_key": {
+                 "operator_key": {
+                   "name": "$OPKEY"
+                 },
+                 "name": "$CLDLET"
+               },
+               "developer": "$ORG",
+               "developer_key": {
+                 "name": "$ORG"
+               },
+               "cluster_key": {
+                 "name": "$CLSTR"
+               },
+               "organization": "$ORG"
+             }
+           }
+         }
+         """
+
+         def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteClusterInst'
+
+           println("Status: "+response.status)
+           println("Content: "+response.content)
+           }
+   }
+}
+
 
     stage('Build Application') {
        steps {
