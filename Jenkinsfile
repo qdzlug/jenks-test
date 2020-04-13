@@ -19,7 +19,6 @@ def TYPE
 def CLUSTERSTATE
 def APPSTATE
 def APPINSTSTATE
-def DOCKERAPP
 
 
 pipeline {
@@ -68,12 +67,14 @@ pipeline {
         }
     }
 
+    node {
+    def app
     stage('Build Docker Image') {
           /*
            * Build our image - if we fail here there
            * is no real point to continuing on.
            */
-          DOCKERAPP = docker.build("qdzlug/jenks-test")
+          app = docker.build("qdzlug/jenks-test")
     }
 
     state('Test Docker Image') {
@@ -81,11 +82,12 @@ pipeline {
          * Test our application; this is obviously
          * not a very comprehensive test.
          */
-         DOCKERAPP.inside {
+         app.inside {
             "curl -f http://127.0.0.1:8000 || exit 1"
       }
     }
 
+ }
 
     stage('Login and get JWT') {
          steps {
