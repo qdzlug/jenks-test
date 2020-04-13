@@ -11,7 +11,7 @@ node {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
 
-        app = docker.build("demoorg/images/mex-docker")
+        app = docker.build("demoorg/images/test")
     }
 
     stage('Test image') {
