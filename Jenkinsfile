@@ -72,7 +72,7 @@ pipeline {
          * Build our image - if we fail here there
          * is no real point to continuing on.
          */
-        app = docker.build("qdzlug/mex-docker")
+        app = docker.build("qdzlug/jenks-test")
     }
 
     state('Test Docker Image') {
