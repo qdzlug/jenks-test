@@ -29,7 +29,7 @@ node {
          * Second, the 'latest' tag.
          * Pushing multiple tags is cheap, as all the layers are reused. */
         docker.withRegistry('https://docker.mobiledgex.net/demoorg/images', 'MeX-Demo') {
-            app.push("${env.1.1}")
+            app.push("${env:1.1}")
             app.push("latest")
         }
     }
