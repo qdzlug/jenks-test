@@ -119,5 +119,44 @@ pipeline {
                 }
         }
     }
+    stage('Build Application') {
+       steps {
+           script{
+
+
+             def rBody = """
+             {
+             "Region": "$REGION",
+             "App": {
+               "key": {
+                 "developer_key": {
+                   "name": "$ORG"
+                 },
+                 "name": "$APPNAME",
+                 "organization": "$ORG",
+                 "version": "$APPVER"
+               },
+               "deployment": "$TYPE",
+               "access_type": $ACCTYPE,
+               "image_path": "$IMGPATH",
+               "image_type": $IMGTYPE,
+               "internal_ports": $INTPORTS,
+               "default_flavor": {
+                 "name": "$FLAVOR"
+               },
+               "revision": $REV,
+               "access_ports": "$ACCPORTS"
+             }
+             }
+             """
+
+             def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/CreateApp'
+
+               println("Status: "+response.status)
+               println("Content: "+response.content)
+               }
+       }
+   }
+
  }
 }
