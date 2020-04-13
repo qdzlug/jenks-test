@@ -17,6 +17,13 @@ def REGION
 def REV
 def TYPE
 
+/*
+ * Variables for state.
+ * /
+def CLUSTERSTATE
+def APPSTATE
+def APPINSTSTATE
+
 
 pipeline {
    agent any
@@ -116,9 +123,85 @@ pipeline {
 
                 println("Status: "+response.status)
                 println("Content: "+response.content)
+                CLUSTERSTATE=response.content
                 }
         }
     }
+
+    stage('Check for Running AppInst') {
+       steps {
+           script{
+
+
+             def rBody = """
+             {
+               "Region": "$REGION",
+               "appinst": {
+                 "key": {
+                   "app_key": {
+                     "developer_key": {
+                       "name": "$ORG"
+                     },
+                     "name": "$APPNAME",
+                     "version": "$APPVER"
+                   },
+                   "cluster_inst_key": {
+                     "cluster_key": {
+                       "name": "$CLSTR"
+                     },
+                     "cloudlet_key": {
+                       "operator_key": {
+                         "name": "$OPKEY"
+                       },
+                       "name": "$CLDLET"
+                     },
+                     "developer": "$ORG"
+                   }
+                 }
+               }
+             }
+             """
+
+             def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowAppInst', validResponseCodes: '100:499'
+
+            println("Status: "+response.status)
+            println("Content: "+response.content)
+            APPINSTSTATE=response.content
+
+               }
+       }
+   }
+
+   stage('Check for Defined Application') {
+      steps {
+          script{
+
+
+            def rBody = """
+            {
+              "Region": "$REGION",
+              "App": {
+                "key": {
+                    "developer_key": {
+                      "name": "$ORG"
+                    },
+                    "name": "$APPNAME",
+                    "version": "$APPVER"
+                  }
+                }
+            }
+            """
+
+            def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowApp', validResponseCodes: '100:499'
+
+              println("Status: "+response.status)
+              println("Content: "+response.content)
+            APPSTATE=response.content
+              }
+      }
+  }
+
+
     stage('Build Application') {
        steps {
            script{
