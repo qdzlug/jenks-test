@@ -64,21 +64,31 @@ pipeline {
               REV = 0
               TYPE = "docker"
             }
-         }
-       }
+        }
+    }
 
 
     stage('Login and get JWT') {
          steps {
             script{
 
+            /*
+             * We need to take our credentials (which are stored in Jenkins) and bind
+             * them to vars so we can get our JWT. That is then used as the Auth Header
+             * for all subsequent calls to the API
+             */
+
             withCredentials([usernamePassword(credentialsId: 'MeX-Demo', passwordVariable: 'MEXPASS', usernameVariable: 'MEXUSER')]) {
+
                 def rBody = """
                 {"username": "$MEXUSER", "password": "$MEXPASS"}
                 """
+
                 def response = httpRequest contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/login'
+
                 println("Status: "+response.status)
                 println("Content: "+response.content)
+
                 def props = readJSON text: response.content
                 props.each { key, value ->
                     echo "Walked through key $key and value $value"
@@ -86,15 +96,20 @@ pipeline {
                 }
             }
             println("Header is "+ AUTH_HEADER)
-            }
-
-        }
+          }
+       }
     }
 
      stage('Check for Running Cluster') {
         steps {
             script{
 
+            /*
+             * We check to see if we already have a cluster running; the next
+             * pass at this would be to pull the response code and either
+             * decide to leave it and reuse it or delete it to go with a
+             * fully clean slate on deploy.
+             */
 
               def rBody = """
               {
@@ -118,17 +133,21 @@ pipeline {
 
               def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowClusterInst'
 
-                println("Status: "+response.status)
-                println("Content: "+response.content)
-                CLUSTERSTATE=response.content
-                }
-        }
-    }
+              println("Status: "+response.status)
+              println("Content: "+response.content)
+              CLUSTERSTATE=response.content
+          }
+      }
+  }
 
     stage('Check for Running AppInst') {
        steps {
            script{
 
+           /*
+            * If there is a running app instance we want to remove it (and the app)
+            * so we can deploy our new version.
+            */
 
              def rBody = """
              {
@@ -159,20 +178,24 @@ pipeline {
              }
              """
 
-             def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowAppInst', validResponseCodes: '100:499'
+            def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowAppInst', validResponseCodes: '100:499'
 
             println("Status: "+response.status)
             println("Content: "+response.content)
             APPINSTSTATE=response.content
 
-               }
-       }
+         }
+      }
    }
 
    stage('Check for Defined Application') {
       steps {
           script{
 
+           /*
+            * If there is a defined app version we want to delete it
+            * so we can deploy our new version.
+            */
 
             def rBody = """
             {
@@ -191,16 +214,24 @@ pipeline {
 
             def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowApp', validResponseCodes: '100:499'
 
-              println("Status: "+response.status)
-              println("Content: "+response.content)
+            println("Status: "+response.status)
+            println("Content: "+response.content)
             APPSTATE=response.content
-              }
+          }
       }
   }
 
   stage('Delete Existing Application Instance') {
      steps {
          script{
+
+          /*
+           * Ideally this will check the response from the earlier step where
+           * we detected a running app instance. However, for our purposes here
+           * we just allow response codes in the 4xx series to account for us
+           * trying to delete a non-existent object.
+           */
+
            def rBody = """
            {
              "Region": "$REGION",
@@ -233,15 +264,23 @@ pipeline {
 
            def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteAppInst', validResponseCodes: '100:499'
 
-             println("Status: "+response.status)
-             println("Content: "+response.content)
-             }
+           println("Status: "+response.status)
+           println("Content: "+response.content)
+         }
      }
  }
 
  stage('Delete Existing Application') {
     steps {
         script{
+
+          /*
+           * Ideally this will check the response from the earlier step where
+           * we detected a defined application However, for our purposes here
+           * we just allow response codes in the 4xx series to account for us
+           * trying to delete a non-existent object.
+           */
+
           def rBody = """
           {
             "Region": "$REGION",
@@ -260,15 +299,23 @@ pipeline {
 
           def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteApp', validResponseCodes: '100:499'
 
-            println("Status: "+response.status)
-            println("Content: "+response.content)
-            }
+          println("Status: "+response.status)
+          println("Content: "+response.content)
+       }
     }
 }
 
 stage('Delete Existing Cluster') {
    steps {
        script{
+
+          /*
+           * Ideally this will check the response from the earlier step where
+           * we detected a running cluster However, for our purposes here
+           * we just allow response codes in the 4xx series to account for us
+           * trying to delete a non-existent object.
+           */
+
          def rBody = """
          {
            "Region": "$REGION",
@@ -295,9 +342,9 @@ stage('Delete Existing Cluster') {
 
          def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteClusterInst', validResponseCodes: '100:499'
 
-           println("Status: "+response.status)
-           println("Content: "+response.content)
-           }
+          println("Status: "+response.status)
+          println("Content: "+response.content)
+      }
    }
 }
 
@@ -305,6 +352,11 @@ stage('Delete Existing Cluster') {
     stage('Build Application') {
        steps {
            script{
+
+            /*
+             * The first step in deployment is in creating an APP.
+             */
+
              def rBody = """
              {
              "Region": "$REGION",
@@ -332,16 +384,21 @@ stage('Delete Existing Cluster') {
 
              def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/CreateApp'
 
-               println("Status: "+response.status)
-               println("Content: "+response.content)
-               }
-       }
+             println("Status: "+response.status)
+             println("Content: "+response.content)
+         }
+      }
    }
 
    stage('Build Cluster Instance') {
       steps {
           script{
 
+          /*
+           * Next we build a cluster instance that we can deploy to;
+           * note that a smarter workflow will account for us wanting
+           * to reuse our cluster.
+           */
 
             def rBody = """
             {
@@ -377,16 +434,19 @@ stage('Delete Existing Cluster') {
 
             def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/CreateClusterInst'
 
-              println("Status: "+response.status)
-              println("Content: "+response.content)
-              }
+            println("Status: "+response.status)
+            println("Content: "+response.content)
+         }
       }
-  }
+   }
 
   stage('Build Application Instance') {
      steps {
          script{
 
+         /*
+          * The final step is to deploy the application instance.
+          */
 
            def rBody = """
            {
@@ -424,13 +484,11 @@ stage('Delete Existing Cluster') {
 
            def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/CreateAppInst'
 
-             println("Status: "+response.status)
-             println("Content: "+response.content)
-             }
+           println("Status: "+response.status)
+           println("Content: "+response.content)
+        }
      }
- }
-
-
+  }
 
  }
 }
