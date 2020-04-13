@@ -32,7 +32,7 @@ node {
          * First, the incremental build number from Jenkins
          * Second, the 'latest' tag.
          * Pushing multiple tags is cheap, as all the layers are reused. */
-        docker.withRegistry('https://docker.mobiledgex.net', 'MeX-Demo') {
+        docker.withRegistry('https://docker.mobiledgex.net/demoorg/images', 'MeX-Demo') {
             /*app.push("${env.BUILD_NUMBER}")*/
             app.push("test:1.1")
         }
