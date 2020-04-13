@@ -2,20 +2,16 @@ node {
     def app
 
     stage('Clone repository') {
-        /*
-         * Let's make sure we have the repository
-         * cloned to our workspace
-         */
+        /* Let's make sure we have the repository cloned to our workspace */
+
         checkout scm
     }
 
     stage('Build image') {
-        /*
-         * This builds the actual image; synonymous to
-         * docker build on the command line
-         */
+        /* This builds the actual image; synonymous to
+         * docker build on the command line */
 
-        app = docker.build("qdzlug/jenks-test")
+        app = docker.build("demoorg/images/mex-docker")
     }
 
     stage('Test image') {
@@ -33,10 +29,8 @@ node {
          * Second, the 'latest' tag.
          * Pushing multiple tags is cheap, as all the layers are reused. */
         docker.withRegistry('https://docker.mobiledgex.net/demoorg/images', 'MeX-Demo') {
-            /*app.push("${env.BUILD_NUMBER}")*/
-            app.push("docker.mobiledgex.net/demoorg/images/test:1.1")
-            /*app.push("test:1.1")*/
-            sh 'docker push docker.mobiledgex.net/demoorg/images/test:1.1'
+            app.push("${env.1.1}")
+            app.push("latest")
         }
     }
 }
