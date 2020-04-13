@@ -81,7 +81,7 @@ pipeline {
         * not a very comprehensive test.
         */
         app.inside {
-           curl -f http://127.0.0.1:8000 || exit 1
+           "curl -f http://127.0.0.1:8000 || exit 1"
         }
     }
 
