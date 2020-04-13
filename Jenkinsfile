@@ -258,7 +258,7 @@ pipeline {
           }
           """
 
-          def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteApp'
+          def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteApp', validResponseCodes: '100:499'
 
             println("Status: "+response.status)
             println("Content: "+response.content)
@@ -293,7 +293,7 @@ stage('Delete Existing Cluster') {
          }
          """
 
-         def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteClusterInst'
+         def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteClusterInst', validResponseCodes: '100:499'
 
            println("Status: "+response.status)
            println("Content: "+response.content)
@@ -337,41 +337,40 @@ stage('Delete Existing Cluster') {
                }
        }
    }
-   stage('Build Application Instance') {
+
+   stage('Build Cluster Instance') {
       steps {
           script{
 
 
             def rBody = """
             {
-            "Region": "$REGION",
-            "AppInst": {
-              "key": {
-                "app_key": {
-                  "organization": "$ORG",
-                  "name": "$APPNAME",
-                  "version": "$APPVER",
-                  "developer_key": {
-                    "name": "$ORG"
-                  }
-                },
-                "cluster_inst_key": {
-                  "cluster_key": {
-                    "name": "$CLSTR"
-                  },
+              "Region": "$REGION",
+              "ClusterInst": {
+                "allocated_ip": "$ALLIP",
+                "ip_access": $IPACC,
+                "key": {
                   "cloudlet_key": {
                     "operator_key": {
                       "name": "$OPKEY"
                     },
                     "name": "$CLDLET"
                   },
-                  "developer": "$ORG"
+                  "developer": "$ORG",
+                  "developer_key": {
+                    "name": "$ORG"
+                  },
+                  "cluster_key": {
+                    "name": "$CLSTR"
+                  },
+                  "organization": "$ORG"
+                },
+                "node_flavor": "$FLAVOR",
+                "deployment": "$TYPE",
+                "flavor": {
+                  "name": "$FLAVOR"
                 }
-              },
-              "flavor": {
-                "name": "$FLAVOR"
               }
-            }
             }
 
             """
@@ -383,6 +382,54 @@ stage('Delete Existing Cluster') {
               }
       }
   }
+
+  stage('Build Application Instance') {
+     steps {
+         script{
+
+
+           def rBody = """
+           {
+           "Region": "$REGION",
+           "AppInst": {
+             "key": {
+               "app_key": {
+                 "organization": "$ORG",
+                 "name": "$APPNAME",
+                 "version": "$APPVER",
+                 "developer_key": {
+                   "name": "$ORG"
+                 }
+               },
+               "cluster_inst_key": {
+                 "cluster_key": {
+                   "name": "$CLSTR"
+                 },
+                 "cloudlet_key": {
+                   "operator_key": {
+                     "name": "$OPKEY"
+                   },
+                   "name": "$CLDLET"
+                 },
+                 "developer": "$ORG"
+               }
+             },
+             "flavor": {
+               "name": "$FLAVOR"
+             }
+           }
+           }
+
+           """
+
+           def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/CreateAppInst'
+
+             println("Status: "+response.status)
+             println("Content: "+response.content)
+             }
+     }
+ }
+
 
 
  }
