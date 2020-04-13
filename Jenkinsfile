@@ -69,24 +69,20 @@ pipeline {
     }
 
     stage('Build Docker Image') {
-        steps{
           /*
            * Build our image - if we fail here there
            * is no real point to continuing on.
            */
           DOCKERAPP = docker.build("qdzlug/jenks-test")
-        }
     }
 
     state('Test Docker Image') {
-      steps{
         /*
          * Test our application; this is obviously
          * not a very comprehensive test.
          */
          DOCKERAPP.inside {
             "curl -f http://127.0.0.1:8000 || exit 1"
-         }
       }
     }
 
