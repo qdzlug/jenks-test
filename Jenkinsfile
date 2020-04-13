@@ -122,8 +122,6 @@ pipeline {
     stage('Build Application') {
        steps {
            script{
-
-
              def rBody = """
              {
              "Region": "$REGION",
@@ -156,6 +154,53 @@ pipeline {
                }
        }
    }
+   stage('Build Application Instance') {
+      steps {
+          script{
+
+
+            def rBody = """
+            {
+            "Region": "$REGION",
+            "AppInst": {
+              "key": {
+                "app_key": {
+                  "organization": "$ORG",
+                  "name": "$APPNAME",
+                  "version": "$APPVER",
+                  "developer_key": {
+                    "name": "$ORG"
+                  }
+                },
+                "cluster_inst_key": {
+                  "cluster_key": {
+                    "name": "$CLSTR"
+                  },
+                  "cloudlet_key": {
+                    "operator_key": {
+                      "name": "$OPKEY"
+                    },
+                    "name": "$CLDLET"
+                  },
+                  "developer": "$ORG"
+                }
+              },
+              "flavor": {
+                "name": "$FLAVOR"
+              }
+            }
+            }
+
+            """
+
+            def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/CreateAppInst'
+
+              println("Status: "+response.status)
+              println("Content: "+response.content)
+              }
+      }
+  }
+
 
  }
 }
