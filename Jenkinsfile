@@ -90,11 +90,9 @@ pipeline {
 
                 def props = readJSON text: response.content
                 props.each { key, value ->
-                    echo "Walked through key $key and value $value"
                     AUTH_HEADER = "Bearer $value"
                 }
             }
-            println("Header is "+ AUTH_HEADER)
           }
        }
     }
@@ -132,9 +130,7 @@ pipeline {
 
               def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowClusterInst'
 
-              println("Status: "+response.status)
-              println("Content: "+response.content)
-              CLUSTERSTATE=response.content
+              CLUSTERSTATE=response.status
           }
       }
   }
@@ -179,9 +175,7 @@ pipeline {
 
             def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowAppInst', validResponseCodes: '100:499'
 
-            println("Status: "+response.status)
-            println("Content: "+response.content)
-            APPINSTSTATE=response.content
+            APPINSTSTATE=response.status
 
          }
       }
@@ -213,9 +207,7 @@ pipeline {
 
             def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/ShowApp', validResponseCodes: '100:499'
 
-            println("Status: "+response.status)
-            println("Content: "+response.content)
-            APPSTATE=response.content
+            APPSTATE=response.status
           }
       }
   }
@@ -263,8 +255,6 @@ pipeline {
 
            def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteAppInst', validResponseCodes: '100:499'
 
-           println("Status: "+response.status)
-           println("Content: "+response.content)
          }
      }
  }
@@ -298,8 +288,6 @@ pipeline {
 
           def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteApp', validResponseCodes: '100:499'
 
-          println("Status: "+response.status)
-          println("Content: "+response.content)
        }
     }
 }
@@ -341,8 +329,6 @@ stage('Delete Existing Cluster') {
 
          def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/DeleteClusterInst', validResponseCodes: '100:499'
 
-          println("Status: "+response.status)
-          println("Content: "+response.content)
       }
    }
 }
@@ -383,8 +369,6 @@ stage('Delete Existing Cluster') {
 
              def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/CreateApp'
 
-             println("Status: "+response.status)
-             println("Content: "+response.content)
          }
       }
    }
@@ -432,9 +416,6 @@ stage('Delete Existing Cluster') {
             """
 
             def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/CreateClusterInst'
-
-            println("Status: "+response.status)
-            println("Content: "+response.content)
          }
       }
    }
@@ -483,8 +464,6 @@ stage('Delete Existing Cluster') {
 
            def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: false, name: 'Authorization', value: "$AUTH_HEADER"]], httpMode: 'POST', requestBody: rBody, url: 'https://console.mobiledgex.net/api/v1/auth/ctrl/CreateAppInst'
 
-           println("Status: "+response.status)
-           println("Content: "+response.content)
         }
      }
   }
